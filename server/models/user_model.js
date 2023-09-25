@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const registerSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     
     name: {
         type: String,
@@ -16,4 +16,6 @@ const registerSchema = new mongoose.Schema({
     }
 })
 
-module.exports = mongoose.model('register', registerSchema)
+const User = mongoose.model('user', userSchema)
+
+module.exports = User
