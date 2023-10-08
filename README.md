@@ -1,4 +1,4 @@
-AskATask - Comprehensive Task and Errand Management Application
+# AskATask - Comprehensive Task and Errand Management Application
 
 ## Introduction
 
