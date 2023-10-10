@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken")
 const validRegisterInput = require("../validations/valid_register")
 const validLoginInput = require("../validations/valid_login")
 
-let User = require('../models/user_model')
+let User = require('../models/user/')
 
 //function for registering
 exports.register = ((req, res) => {
@@ -39,7 +39,7 @@ exports.register = ((req, res) => {
     })
 })
 
-//function for loggin in
+//function for login
 exports.login = ((req, res) => {
 
     const { errors, isValid } = validLoginInput(req.body)
