@@ -43,6 +43,21 @@ exports.getTaskById = (req, res) => {
     );
 };
 
+// Find user by ID and populate the tasks_accepted and tasks_completed fields
+exports.getMyTasks = (req, res) => {
+  const userId = req.login.id;
+  User.findById(userId)
+    .populate("tasks_accepted")
+    .populate("tasks_completed")
+    .then((user) => {
+      res.json({
+        acceptedTasks: user.tasks_accepted,
+        completedTasks: user.tasks_completed,
+      });
+    })
+    .catch((err) => res.status(500).json({ error: "Failed to fetch tasks." }));
+};
+
 // Update a specific task by its ID
 exports.updateTask = (req, res) => {
   const userId = req.login.id;
@@ -62,6 +77,50 @@ exports.updateTask = (req, res) => {
     })
     .catch((err) =>
       res.status(500).json({ error: "Failed to update the task." })
+    );
+};
+
+//Accept a task
+exports.acceptTask = (req, res) => {
+  const userId = req.login.id;
+
+  Task.findOneAndUpdate(
+    { _id: req.params.taskId, status: "Open" },
+    { accepted_by: userId, status: "Active" },
+    { new: true }
+  )
+    .then((task) => {
+      if (!task) {
+        return res.status(404).json({
+          error: "Task not found or it's already accepted by someone else.",
+        });
+      }
+      res.json(task);
+    })
+    .catch((err) =>
+      res.status(500).json({ error: "Failed to accept the task." })
+    );
+};
+
+//Close a task
+exports.closeTask = (req, res) => {
+  const userId = req.login.id;
+
+  Task.findOneAndUpdate(
+    { _id: req.params.taskId, created_by: userId },
+    { status: "Closed" },
+    { new: true }
+  )
+    .then((task) => {
+      if (!task) {
+        return res
+          .status(404)
+          .json({ error: "Task not found or not authorized to close it." });
+      }
+      res.json(task);
+    })
+    .catch((err) =>
+      res.status(500).json({ error: "Failed to close the task." })
     );
 };
 
