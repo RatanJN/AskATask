@@ -18,6 +18,8 @@ module.exports = function validRegisterInput(data) {
     errors.bu_email = "Email Required";
   } else if (!Validator.isEmail(data.bu_email)) {
     errors.bu_email = "Email is invalid";
+  } else if (!data.bu_email.endsWith("@bu.edu")) {
+    errors.bu_email = "Only @bu.edu emails are allowed";
   }
 
   if (!Validator.isLength(data.password, { min: 6, max: 30 })) {
