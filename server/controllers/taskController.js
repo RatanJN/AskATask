@@ -1,4 +1,5 @@
 const Task = require("../models/task");
+const User = require("../models/user");
 
 // Create a new task
 exports.createTask = (req, res) => {
@@ -85,21 +86,40 @@ exports.acceptTask = (req, res) => {
   const userId = req.login.id;
 
   Task.findOneAndUpdate(
-    { _id: req.params.taskId, status: "Open" },
+    { _id: req.params.taskId, status: "Open", created_by: { $ne: userId } },
     { accepted_by: userId, status: "Active" },
     { new: true }
   )
     .then((task) => {
       if (!task) {
         return res.status(404).json({
-          error: "Task not found or it's already accepted by someone else.",
+          error:
+            "Task not found, it's already accepted by someone else, or you are trying to accept your own task.",
         });
       }
-      res.json(task);
+
+      // After successfully updating the task, update the user's tasks_accepted
+      User.findByIdAndUpdate(
+        userId,
+        { $push: { tasks_accepted: task._id } },
+        { new: true, useFindAndModify: false }
+      )
+        .then((user) => {
+          if (!user) {
+            return res.status(404).json({ error: "User not found." });
+          }
+          res.json(task);
+        })
+        .catch((err) => {
+          res
+            .status(500)
+            .json({ error: "Failed to update user's accepted tasks." });
+        });
     })
-    .catch((err) =>
-      res.status(500).json({ error: "Failed to accept the task." })
-    );
+    .catch((err) => {
+      console.error("Error in acceptTask", err);
+      res.status(500).json({ error: "Failed to accept the task." });
+    });
 };
 
 //Close a task

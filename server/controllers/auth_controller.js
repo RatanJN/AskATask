@@ -23,6 +23,7 @@ exports.register = (req, res) => {
       name: req.body.name,
       bu_email: req.body.bu_email,
       password: req.body.password,
+      phone_number: req.body.phone_number,
     });
 
     bcrypt.genSalt(10, (err, salt) => {

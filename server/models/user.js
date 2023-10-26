@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  phone_number: {
+    type: Number,
+    required: true,
+  },
   tasks_created: [
     {
       type: mongoose.Schema.Types.ObjectId,
