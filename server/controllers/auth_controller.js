@@ -72,7 +72,7 @@ exports.login = (req, res) => {
           payload,
           process.env.JWT_SECRET,
           {
-            expiresIn: "3h",
+            expiresIn: "10h",
           },
           (err, token) => {
             res.json({
