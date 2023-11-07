@@ -40,6 +40,7 @@ exports.register = (req, res) => {
 };
 
 //function for login
+//function for login
 exports.login = (req, res) => {
   const { errors, isValid } = validLoginInput(req.body);
 
@@ -72,13 +73,21 @@ exports.login = (req, res) => {
           payload,
           process.env.JWT_SECRET,
           {
-            expiresIn: "10h",
+            expiresIn: "10h", // Token will expire in 10 hours
           },
           (err, token) => {
-            res.json({
-              payload,
+            // Set token to HTTP-only cookie
+            res.cookie("token", token, {
+              httpOnly: true, // The cookie cannot be accessed by client-side JS
+              secure: process.env.NODE_ENV === "production", // On production, set the Secure flag
+              expires: new Date(Date.now() + 10 * 3600000), // Cookie expiration time should match the token expiration
+            });
+
+            // Optional: Send a response to the frontend for successful login
+            res.status(200).json({
               success: true,
-              token: token,
+              message: "Authenticated successfully",
+              // You may choose not to send the payload back since it's in the token
             });
           }
         );
