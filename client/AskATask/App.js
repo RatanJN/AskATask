@@ -1,17 +1,20 @@
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { createAppContainer } from "react-navigation";
-import { createMaterialBottomTabNavigator } from
-    "react-navigation-material-bottom-tabs";
+import { createMaterialBottomTabNavigator } from "react-navigation-material-bottom-tabs";
 
 import HomeScreen from "./screens/HomeScreen ";
 import SettingScreen from "./screens/SettingScreen";
 import UserScreen from "./screens/UserScreen";
-  
+import RegisterScreen from "./screens/RegisterScreen";
+import LoginScreen from "./screens/LoginScreen";
+import LoginProvider from "./Context/LoginProvider";
+import Main from "./Navigator/Main"
+
 const TabNavigator = createMaterialBottomTabNavigator(
   {
     Home: {
-      screen: HomeScreen,
+      screen: LoginScreen,
       navigationOptions: {
         tabBarLabel: "Home",
         tabBarIcon: (tabInfo) => (
@@ -52,16 +55,16 @@ const TabNavigator = createMaterialBottomTabNavigator(
   },
   {
     initialRouteName: "Home",
-    barStyle: { backgroundColor: "#006600" },
+    barStyle: { backgroundColor: "white" },
   }
 );
-  
+
 const Navigator = createAppContainer(TabNavigator);
-  
+
 export default function App() {
   return (
     <Navigator>
-      <HomeScreen />
+      <HomeScreen/>
     </Navigator>
   );
 }
