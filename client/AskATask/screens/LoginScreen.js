@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 
-const LoginScreen = () => {
+const LoginScreen = (props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -18,12 +18,12 @@ const LoginScreen = () => {
   };
 
   const signupPage=()=>{
-    //props.navigation.navigate("signup");
+    props.navigation.navigate("signup");
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome Back!</Text>
+      <Text style={styles.title}>Welcome to AskATask!</Text>
 
       <TextInput
         style={styles.input}
@@ -45,7 +45,7 @@ const LoginScreen = () => {
       </TouchableOpacity>
 
       <View style={styles.linksContainer}>
-        <TouchableOpacity onPress={() => Alert.alert('Navigate to Signup')}>
+        <TouchableOpacity onPress={()=>signupPage()}>
           <Text style={styles.linkText}>Signup</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={()=>signupPage()}>

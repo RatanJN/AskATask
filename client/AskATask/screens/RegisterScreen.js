@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 
-const RegisterScreen = () => {
+const RegisterScreen = (props) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,6 +17,10 @@ const RegisterScreen = () => {
     // Implement registration logic here
     Alert.alert('Registered successfully!'); // Placeholder alert
   };
+
+  const backButton=()=>{
+    props.navigation.navigate("login");
+  }
 
   return (
     <View style={styles.container}>
@@ -47,6 +51,9 @@ const RegisterScreen = () => {
       <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
         <Text style={styles.registerButtonText}>Register</Text>
       </TouchableOpacity>
+      <TouchableOpacity onPress={()=>backButton()}>
+          <Text style={styles.linkText}>Back</Text>
+        </TouchableOpacity>
     </View>
   );
 };
@@ -91,6 +98,13 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 18,
     fontWeight: '500',
+  },
+  linkText: {
+    paddingTop:5,
+    alignSelf:"center",
+    color: '#FFF',
+    fontSize: 16,
+    textDecorationLine: 'underline',
   },
 });
 
