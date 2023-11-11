@@ -3,7 +3,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
-import TaskListScreen from "../screens/TaskListScreen";
 
 const Stack= createStackNavigator();
 function MyStack(){
@@ -11,7 +10,7 @@ function MyStack(){
         <Stack.Navigator>
             <Stack.Screen 
                 name='login'
-                component={TaskListScreen}
+                component={LoginScreen}
                 options={{
                     headerShown:false,
                 }}

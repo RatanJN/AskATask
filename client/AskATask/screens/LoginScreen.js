@@ -7,15 +7,19 @@ import {
   Text,
   Alert,
 } from 'react-native';
+import { useLogin } from '../Context/LoginProvider';
 
 const LoginScreen = (props) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  
+  const { isLoggedIn, setIsLoggedIn } = useLogin(); // This is how you use useLogin
 
   const handleLogin = () => {
-    // Implement login logic here
-    Alert.alert('Login successful!'); // Placeholder alert
+    setIsLoggedIn(true);
+    Alert.alert('Login successful!');
   };
+
 
   const signupPage=()=>{
     props.navigation.navigate("signup");
