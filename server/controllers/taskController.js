@@ -3,20 +3,44 @@ const User = require("../models/user");
 
 // Create a new task
 exports.createTask = (req, res) => {
-  const userId = req.login.id;
+  const userId = req.login.id; // Or however you're getting the authenticated user's ID
 
+  // Create a new task with the user's ID as the creator
   const newTask = new Task({
     ...req.body,
     created_by: userId,
   });
+
+  // Save the new task
   newTask
     .save()
-    .then((task) => res.status(201).json(task))
-    .catch((err) =>
+    .then((task) => {
+      // Now, find the user and update their tasks_created array
+      User.findByIdAndUpdate(
+        userId,
+        { $push: { tasks_created: task._id } }, // Push the new task's ID into the tasks_created array
+        { new: true, useFindAndModify: false } // Options for returning the updated user and for deprecation warnings
+      )
+        .then((user) => {
+          if (!user) {
+            return res.status(404).json({ error: "User not found." });
+          }
+          // Respond with the created task. You can also include the updated user data if necessary
+          res.status(201).json(task);
+        })
+        .catch((err) => {
+          Task.findByIdAndRemove(task._id).exec(); // Cleanup by removing the orphaned task
+          res.status(500).json({
+            error: "Task created, but user update failed.",
+            details: err.message,
+          });
+        });
+    })
+    .catch((err) => {
       res
         .status(500)
-        .json({ error: "Failed to create the task.", details: err.message })
-    );
+        .json({ error: "Failed to create the task.", details: err.message });
+    });
 };
 
 // Fetch all tasks
@@ -181,7 +205,22 @@ exports.closeTask = (req, res) => {
           .status(404)
           .json({ error: "Task not found or not authorized to close it." });
       }
-      res.json(task);
+
+      // Check if the task was accepted by someone
+      if (task.accepted_by) {
+        // Remove the task from the tasks_accepted array of the user who accepted it
+        User.findByIdAndUpdate(
+          task.accepted_by,
+          { $pull: { tasks_accepted: task._id } },
+          { new: true, useFindAndModify: false }
+        )
+          .then(() => res.json(task))
+          .catch((err) =>
+            res.status(500).json({ error: "Failed to update user data." })
+          );
+      } else {
+        res.json(task); // If no one had accepted the task, just return the task
+      }
     })
     .catch((err) =>
       res.status(500).json({ error: "Failed to close the task." })
@@ -192,16 +231,51 @@ exports.closeTask = (req, res) => {
 exports.deleteTask = (req, res) => {
   const userId = req.login.id;
 
-  Task.findOneAndRemove({ _id: req.params.taskId, created_by: userId })
+  Task.findOne({ _id: req.params.taskId, created_by: userId })
     .then((task) => {
       if (!task) {
         return res
           .status(404)
           .json({ error: "Task not found or not authorized." });
       }
-      res.json({ message: "Task deleted successfully." });
+
+      // Function to remove the task from the Task collection
+      const removeTask = () => {
+        Task.findByIdAndRemove(task._id)
+          .then(() => {
+            // Also remove the task from the tasks_created array of the user
+            User.findByIdAndUpdate(
+              userId,
+              { $pull: { tasks_created: task._id } },
+              { new: true, useFindAndModify: false }
+            )
+              .then(() => res.json({ message: "Task deleted successfully." }))
+              .catch((err) =>
+                res.status(500).json({ error: "Failed to update user data." })
+              );
+          })
+          .catch((err) =>
+            res.status(500).json({ error: "Failed to delete the task." })
+          );
+      };
+
+      // Check if the task was accepted by someone
+      if (task.accepted_by) {
+        // Remove the task from the tasks_accepted array of the user who accepted it
+        User.findByIdAndUpdate(
+          task.accepted_by,
+          { $pull: { tasks_accepted: task._id } },
+          { new: true, useFindAndModify: false }
+        )
+          .then(removeTask)
+          .catch((err) =>
+            res.status(500).json({ error: "Failed to update user data." })
+          );
+      } else {
+        removeTask();
+      }
     })
     .catch((err) =>
-      res.status(500).json({ error: "Failed to delete the task." })
+      res.status(500).json({ error: "Failed to find the task." })
     );
 };
