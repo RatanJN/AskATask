@@ -23,7 +23,14 @@ exports.createTask = (req, res) => {
 exports.getTasks = (req, res) => {
   const userId = req.login.id;
 
-  Task.find({ created_by: userId })
+  // Get the current date at the start of the day in UTC
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0); // Set the time to 00:00:00.000
+
+  Task.find({
+    created_by: userId,
+    task_date: { $gte: today }, // $gte selects those documents where the value of the field is greater than or equal to (i.e., >=) the specified value
+  })
     .then((tasks) => res.json(tasks))
     .catch((err) => res.status(500).json({ error: "Failed to fetch tasks." }));
 };
@@ -63,22 +70,59 @@ exports.getMyTasks = (req, res) => {
 exports.updateTask = (req, res) => {
   const userId = req.login.id;
 
-  Task.findOneAndUpdate(
-    { _id: req.params.taskId, created_by: userId },
-    req.body,
-    { new: true }
-  )
-    .then((task) => {
-      if (!task) {
-        return res
-          .status(404)
-          .json({ error: "Task not found or not authorized." });
-      }
-      res.json(task);
+  // Function to perform the actual task update
+  function performUpdate() {
+    Task.findOneAndUpdate(
+      { _id: req.params.taskId, created_by: userId },
+      req.body,
+      { new: true }
+    )
+      .then((task) => {
+        if (!task) {
+          return res
+            .status(404)
+            .json({ error: "Task not found or not authorized." });
+        }
+
+        // If task status is changed to Open, update user's tasks_accepted
+        if (req.body.status === "Open") {
+          User.findByIdAndUpdate(
+            task.accepted_by, // assuming the task has the accepted_by field
+            { $pull: { tasks_accepted: task._id } },
+            { new: true, useFindAndModify: false }
+          )
+            .then(() => res.json(task))
+            .catch((err) =>
+              res.status(500).json({ error: "Failed to update user data." })
+            );
+        } else {
+          res.json(task);
+        }
+      })
+      .catch((err) =>
+        res.status(500).json({ error: "Failed to update the task." })
+      );
+  }
+
+  // Validate for status change from Active to Open
+  if (req.body.status === "Open") {
+    Task.findOne({
+      _id: req.params.taskId,
+      created_by: userId,
+      status: "Active",
     })
-    .catch((err) =>
-      res.status(500).json({ error: "Failed to update the task." })
-    );
+      .then((task) => {
+        if (!task) {
+          return res.status(400).json({ error: "Invalid status change." });
+        }
+        // Proceed with update if validation passes
+        performUpdate();
+      })
+      .catch((err) => res.status(500).json({ error: "Validation error." }));
+  } else {
+    // Proceed with the update if no status change to Open
+    performUpdate();
+  }
 };
 
 //Accept a task

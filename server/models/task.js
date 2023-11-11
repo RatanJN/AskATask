@@ -14,7 +14,7 @@ const taskSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
-  }, 
+  },
   accepted_by: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -24,11 +24,10 @@ const taskSchema = new mongoose.Schema({
     enum: ["Open", "Active", "Closed"],
     default: "Open",
   },
-  time_opened: {
+  task_date: {
     type: Date,
-    default: Date.now,
+    required: true,
   },
-  time_closed: Date,
 });
 
 const Task = mongoose.model("Task", taskSchema);

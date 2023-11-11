@@ -40,7 +40,6 @@ exports.register = (req, res) => {
 };
 
 //function for login
-//function for login
 exports.login = (req, res) => {
   const { errors, isValid } = validLoginInput(req.body);
 
@@ -87,7 +86,6 @@ exports.login = (req, res) => {
             res.status(200).json({
               success: true,
               message: "Authenticated successfully",
-              // You may choose not to send the payload back since it's in the token
             });
           }
         );
