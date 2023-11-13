@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -21,19 +21,19 @@ const userSchema = new mongoose.Schema({
   tasks_created: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Task",
+      ref: 'Task',
       default: [],
     },
   ],
   tasks_accepted: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Task",
+      ref: 'Task',
       default: [],
     },
   ],
 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;

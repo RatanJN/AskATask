@@ -1,5 +1,5 @@
-const Task = require("../models/task");
-const User = require("../models/user");
+const Task = require('../models/task');
+const User = require('../models/user');
 
 // Create a new task
 exports.createTask = (req, res) => {
@@ -23,7 +23,7 @@ exports.createTask = (req, res) => {
       )
         .then((user) => {
           if (!user) {
-            return res.status(404).json({ error: "User not found." });
+            return res.status(404).json({ error: 'User not found.' });
           }
           // Respond with the created task. You can also include the updated user data if necessary
           res.status(201).json(task);
@@ -31,7 +31,7 @@ exports.createTask = (req, res) => {
         .catch((err) => {
           Task.findByIdAndRemove(task._id).exec(); // Cleanup by removing the orphaned task
           res.status(500).json({
-            error: "Task created, but user update failed.",
+            error: 'Task created, but user update failed.',
             details: err.message,
           });
         });
@@ -39,7 +39,7 @@ exports.createTask = (req, res) => {
     .catch((err) => {
       res
         .status(500)
-        .json({ error: "Failed to create the task.", details: err.message });
+        .json({ error: 'Failed to create the task.', details: err.message });
     });
 };
 
@@ -56,7 +56,7 @@ exports.getTasks = (req, res) => {
     task_date: { $gte: today }, // $gte selects those documents where the value of the field is greater than or equal to (i.e., >=) the specified value
   })
     .then((tasks) => res.json(tasks))
-    .catch((err) => res.status(500).json({ error: "Failed to fetch tasks." }));
+    .catch((err) => res.status(500).json({ error: 'Failed to fetch tasks.' }));
 };
 
 // Fetch a single task by its ID
@@ -66,12 +66,12 @@ exports.getTaskById = (req, res) => {
   Task.findOne({ _id: req.params.taskId, created_by: userId })
     .then((task) => {
       if (!task) {
-        return res.status(404).json({ error: "Task not found." });
+        return res.status(404).json({ error: 'Task not found.' });
       }
       res.json(task);
     })
     .catch((err) =>
-      res.status(500).json({ error: "Failed to fetch the task." })
+      res.status(500).json({ error: 'Failed to fetch the task.' })
     );
 };
 
@@ -79,15 +79,15 @@ exports.getTaskById = (req, res) => {
 exports.getMyTasks = (req, res) => {
   const userId = req.login.id;
   User.findById(userId)
-    .populate("tasks_accepted")
-    .populate("tasks_completed")
+    .populate('tasks_accepted')
+    .populate('tasks_completed')
     .then((user) => {
       res.json({
         acceptedTasks: user.tasks_accepted,
         completedTasks: user.tasks_completed,
       });
     })
-    .catch((err) => res.status(500).json({ error: "Failed to fetch tasks." }));
+    .catch((err) => res.status(500).json({ error: 'Failed to fetch tasks.' }));
 };
 
 // Update a specific task by its ID
@@ -105,11 +105,11 @@ exports.updateTask = (req, res) => {
         if (!task) {
           return res
             .status(404)
-            .json({ error: "Task not found or not authorized." });
+            .json({ error: 'Task not found or not authorized.' });
         }
 
         // If task status is changed to Open, update user's tasks_accepted
-        if (req.body.status === "Open") {
+        if (req.body.status === 'Open') {
           User.findByIdAndUpdate(
             task.accepted_by, // assuming the task has the accepted_by field
             { $pull: { tasks_accepted: task._id } },
@@ -117,32 +117,32 @@ exports.updateTask = (req, res) => {
           )
             .then(() => res.json(task))
             .catch((err) =>
-              res.status(500).json({ error: "Failed to update user data." })
+              res.status(500).json({ error: 'Failed to update user data.' })
             );
         } else {
           res.json(task);
         }
       })
       .catch((err) =>
-        res.status(500).json({ error: "Failed to update the task." })
+        res.status(500).json({ error: 'Failed to update the task.' })
       );
   }
 
   // Validate for status change from Active to Open
-  if (req.body.status === "Open") {
+  if (req.body.status === 'Open') {
     Task.findOne({
       _id: req.params.taskId,
       created_by: userId,
-      status: "Active",
+      status: 'Active',
     })
       .then((task) => {
         if (!task) {
-          return res.status(400).json({ error: "Invalid status change." });
+          return res.status(400).json({ error: 'Invalid status change.' });
         }
         // Proceed with update if validation passes
         performUpdate();
       })
-      .catch((err) => res.status(500).json({ error: "Validation error." }));
+      .catch((err) => res.status(500).json({ error: 'Validation error.' }));
   } else {
     // Proceed with the update if no status change to Open
     performUpdate();
@@ -154,8 +154,8 @@ exports.acceptTask = (req, res) => {
   const userId = req.login.id;
 
   Task.findOneAndUpdate(
-    { _id: req.params.taskId, status: "Open", created_by: { $ne: userId } },
-    { accepted_by: userId, status: "Active" },
+    { _id: req.params.taskId, status: 'Open', created_by: { $ne: userId } },
+    { accepted_by: userId, status: 'Active' },
     { new: true }
   )
     .then((task) => {
@@ -174,7 +174,7 @@ exports.acceptTask = (req, res) => {
       )
         .then((user) => {
           if (!user) {
-            return res.status(404).json({ error: "User not found." });
+            return res.status(404).json({ error: 'User not found.' });
           }
           res.json(task);
         })
@@ -185,8 +185,8 @@ exports.acceptTask = (req, res) => {
         });
     })
     .catch((err) => {
-      console.error("Error in acceptTask", err);
-      res.status(500).json({ error: "Failed to accept the task." });
+      console.error('Error in acceptTask', err);
+      res.status(500).json({ error: 'Failed to accept the task.' });
     });
 };
 
@@ -196,14 +196,14 @@ exports.closeTask = (req, res) => {
 
   Task.findOneAndUpdate(
     { _id: req.params.taskId, created_by: userId },
-    { status: "Closed" },
+    { status: 'Closed' },
     { new: true }
   )
     .then((task) => {
       if (!task) {
         return res
           .status(404)
-          .json({ error: "Task not found or not authorized to close it." });
+          .json({ error: 'Task not found or not authorized to close it.' });
       }
 
       // Check if the task was accepted by someone
@@ -216,14 +216,14 @@ exports.closeTask = (req, res) => {
         )
           .then(() => res.json(task))
           .catch((err) =>
-            res.status(500).json({ error: "Failed to update user data." })
+            res.status(500).json({ error: 'Failed to update user data.' })
           );
       } else {
         res.json(task); // If no one had accepted the task, just return the task
       }
     })
     .catch((err) =>
-      res.status(500).json({ error: "Failed to close the task." })
+      res.status(500).json({ error: 'Failed to close the task.' })
     );
 };
 
@@ -236,7 +236,7 @@ exports.deleteTask = (req, res) => {
       if (!task) {
         return res
           .status(404)
-          .json({ error: "Task not found or not authorized." });
+          .json({ error: 'Task not found or not authorized.' });
       }
 
       // Function to remove the task from the Task collection
@@ -249,13 +249,13 @@ exports.deleteTask = (req, res) => {
               { $pull: { tasks_created: task._id } },
               { new: true, useFindAndModify: false }
             )
-              .then(() => res.json({ message: "Task deleted successfully." }))
+              .then(() => res.json({ message: 'Task deleted successfully.' }))
               .catch((err) =>
-                res.status(500).json({ error: "Failed to update user data." })
+                res.status(500).json({ error: 'Failed to update user data.' })
               );
           })
           .catch((err) =>
-            res.status(500).json({ error: "Failed to delete the task." })
+            res.status(500).json({ error: 'Failed to delete the task.' })
           );
       };
 
@@ -269,13 +269,13 @@ exports.deleteTask = (req, res) => {
         )
           .then(removeTask)
           .catch((err) =>
-            res.status(500).json({ error: "Failed to update user data." })
+            res.status(500).json({ error: 'Failed to update user data.' })
           );
       } else {
         removeTask();
       }
     })
     .catch((err) =>
-      res.status(500).json({ error: "Failed to find the task." })
+      res.status(500).json({ error: 'Failed to find the task.' })
     );
 };

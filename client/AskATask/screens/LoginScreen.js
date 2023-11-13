@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
@@ -6,24 +6,34 @@ import {
   TouchableOpacity,
   Text,
   Alert,
-} from 'react-native';
-import { useLogin } from '../Context/LoginProvider';
+} from "react-native";
+import { useLogin } from "../Context/LoginProvider";
+import { loginUser } from "../APIcalls/authScript";
 
 const LoginScreen = (props) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const { isLoggedIn, setIsLoggedIn } = useLogin(); // This is how you use useLogin
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-    Alert.alert('Login successful!');
+  const handleLogin = async () => {
+    try {
+      const data = await loginUser({ bu_email: email, password: password });
+      setIsLoggedIn(true); // Set logged in state
+      Alert.alert("Login successful!", data.message);
+      // Navigate to the next screen or perform other actions on successful login
+    } catch (error) {
+      // If login fails, display an error
+      Alert.alert(
+        "Login Failed",
+        error.response?.data?.error || "An error occurred"
+      );
+    }
   };
 
-
-  const signupPage=()=>{
+  const signupPage = () => {
     props.navigation.navigate("signup");
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -49,10 +59,10 @@ const LoginScreen = (props) => {
       </TouchableOpacity>
 
       <View style={styles.linksContainer}>
-        <TouchableOpacity onPress={()=>signupPage()}>
+        <TouchableOpacity onPress={() => signupPage()}>
           <Text style={styles.linkText}>Signup</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={()=>signupPage()}>
+        <TouchableOpacity onPress={() => signupPage()}>
           <Text style={styles.linkText}>Forgot Password?</Text>
         </TouchableOpacity>
       </View>
@@ -63,53 +73,53 @@ const LoginScreen = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: 40,
-    backgroundColor: '#4a90e2',
+    backgroundColor: "#4a90e2",
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 40,
-    color: '#FFF',
+    color: "#FFF",
   },
   input: {
     height: 50,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 25,
     paddingHorizontal: 20,
     marginBottom: 20,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     fontSize: 16,
   },
   loginButton: {
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#34A853',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#34A853",
+    justifyContent: "center",
+    alignItems: "center",
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
   loginButtonText: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 18,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   linksContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 20,
   },
   linkText: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 16,
-    textDecorationLine: 'underline',
+    textDecorationLine: "underline",
   },
 });
 

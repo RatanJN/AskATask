@@ -1,10 +1,10 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
-const validRegisterInput = require("../validations/valid_register");
-const validLoginInput = require("../validations/valid_login");
+const validRegisterInput = require('../validations/valid_register');
+const validLoginInput = require('../validations/valid_login');
 
-let User = require("../models/user");
+let User = require('../models/user');
 
 //function for registering
 exports.register = (req, res) => {
@@ -16,7 +16,7 @@ exports.register = (req, res) => {
 
   User.findOne({ bu_email: req.body.bu_email }).then((register) => {
     if (register) {
-      return res.status(400).json({ bu_email: "Email already exists" });
+      return res.status(400).json({ bu_email: 'Email already exists' });
     }
 
     const newRegister = new User({
@@ -54,7 +54,7 @@ exports.login = (req, res) => {
   User.findOne({ bu_email }).then((login) => {
     // Check if user exists
     if (!login) {
-      return res.status(404).json({ emailnotfound: "Email not found" });
+      return res.status(404).json({ emailnotfound: 'Email not found' });
     }
 
     // Check password
@@ -72,27 +72,27 @@ exports.login = (req, res) => {
           payload,
           process.env.JWT_SECRET,
           {
-            expiresIn: "10h", // Token will expire in 10 hours
+            expiresIn: '10h', // Token will expire in 10 hours
           },
           (err, token) => {
             // Set token to HTTP-only cookie
-            res.cookie("token", token, {
+            res.cookie('token', token, {
               httpOnly: true, // The cookie cannot be accessed by client-side JS
-              secure: process.env.NODE_ENV === "production", // On production, set the Secure flag
+              secure: process.env.NODE_ENV === 'production', // On production, set the Secure flag
               expires: new Date(Date.now() + 10 * 3600000), // Cookie expiration time should match the token expiration
             });
 
             // Optional: Send a response to the frontend for successful login
             res.status(200).json({
               success: true,
-              message: "Authenticated successfully",
+              message: 'Authenticated successfully',
             });
           }
         );
       } else {
         return res
           .status(400)
-          .json({ passwordincorrect: "Password incorrect" });
+          .json({ passwordincorrect: 'Password incorrect' });
       }
     });
   });

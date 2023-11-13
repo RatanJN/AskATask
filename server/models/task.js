@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema({
   title: {
@@ -8,21 +8,21 @@ const taskSchema = new mongoose.Schema({
   description: String,
   category: {
     type: String,
-    enum: ["Academic", "Nonacademic"],
+    enum: ['Academic', 'Nonacademic'],
   },
   created_by: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   accepted_by: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
   },
   status: {
     type: String,
-    enum: ["Open", "Active", "Closed"],
-    default: "Open",
+    enum: ['Open', 'Active', 'Closed'],
+    default: 'Open',
   },
   task_date: {
     type: Date,
@@ -30,5 +30,5 @@ const taskSchema = new mongoose.Schema({
   },
 });
 
-const Task = mongoose.model("Task", taskSchema);
+const Task = mongoose.model('Task', taskSchema);
 module.exports = Task;
