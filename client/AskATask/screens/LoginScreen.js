@@ -7,23 +7,35 @@ import {
   Text,
   Alert,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLogin } from "../Context/LoginProvider";
 import { loginUser } from "../APIcalls/authScript";
+import { useAuthToken } from "../Context/AuthTokenProvider";
 
 const LoginScreen = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { isLoggedIn, setIsLoggedIn } = useLogin(); // This is how you use useLogin
+  const { setIsLoggedIn } = useLogin(); // This is how you use useLogin
+  const { setAuthToken } = useAuthToken();
 
   const handleLogin = async () => {
     try {
-      const data = await loginUser({ bu_email: email, password: password });
-      setIsLoggedIn(true); // Set logged in state
-      Alert.alert("Login successful!", data.message);
+      const response = await loginUser({ bu_email: email, password: password });
+      const data = await response.json();
+      if (Object.keys(data).includes("message")) {
+        setIsLoggedIn(true); // Set logged in state
+        setAuthToken(response.headers.map["set-cookie"].substring(6));
+        await AsyncStorage.setItem("email", email);
+        await AsyncStorage.setItem("pwd", password);
+        await AsyncStorage.setItem("signedIn", "true");
+      } else {
+        Alert.alert("Login Failed", "Incorrect credentials");
+      }
       // Navigate to the next screen or perform other actions on successful login
     } catch (error) {
       // If login fails, display an error
+      console.log(error);
       Alert.alert(
         "Login Failed",
         error.response?.data?.error || "An error occurred"

@@ -83,7 +83,7 @@ const TaskListScreen = (props) => {
       <FlatList
         data={filteredTasks}
         renderItem={renderTask}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
       />
     </View>
   );

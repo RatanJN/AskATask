@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://10.0.0.15:3000/api/tasks';
+const API_BASE_URL = 'http://10.0.0.43:3000/api/tasks';
 
 export const createNewTask = async (taskData) => {
   try {
@@ -11,6 +11,8 @@ export const createNewTask = async (taskData) => {
       body: JSON.stringify(taskData),
     });
     const data = await response.json();
+    const header=await response.header;
+    console.log(header)
     console.log(data);
   } catch (error) {
     console.error(error);
