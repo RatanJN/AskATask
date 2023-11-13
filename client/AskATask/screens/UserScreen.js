@@ -3,17 +3,29 @@ import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, FlatList,Image 
 
 // Dummy data for tasks
 const tasks = [
-  { id: '1', title: 'Math Homework', category: 'Academic' },
-  { id: '2', title: 'English Essay', category: 'Academic' },
+  { id: '1', title: 'Math Homework', category: 'Academic' ,startDate:"2018-01-01"},
+  { id: '2', title: 'English Essay', category: 'Academic' ,startDate:"2018-01-01"},
   // ...other tasks
 ];
 
-const UserDetailsScreen = () => {
+const UserDetailsScreen = (props) => {
   const [activeTab, setActiveTab] = useState('Created');
+  const user={
+    name:"Ratan J Naik",
+    email:"hshsjjsa"
+  }
+
+  const callScreen=(item)=>{
+    if(activeTab=='Created'){
+      props.navigation.navigate('Update Screen', { taskDetails: item, userInfo: user });
+    }else{
+      props.navigation.navigate('TaskDetail Screen', { task: item, showAccept:false });
+    }
+  }
 
   // Function to render each task
   const renderTask = ({ item }) => (
-    <TouchableOpacity style={styles.taskCard} >
+    <TouchableOpacity style={styles.taskCard} onPress={()=>callScreen(item)}>
       <Text style={styles.taskTitle}>{item.title}</Text>
       <Text style={styles.taskCategory}>{item.category}</Text>
     </TouchableOpacity>

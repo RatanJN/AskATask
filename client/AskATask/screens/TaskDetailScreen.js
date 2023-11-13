@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const TaskDetailScreen = ({ route, navigation }) => {
-  const { task } = route.params;
+  const { task, showAccept } = route.params;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -14,21 +14,32 @@ const TaskDetailScreen = ({ route, navigation }) => {
         <Text style={styles.headerTitle}>Task Details</Text>
       </View>
 
-      <View style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.container} // Apply the layout styles here
+      >
         <View style={styles.card}>
           {/* Task Image */}
           <Image source={require('../assets/TodoImage.png')} style={styles.taskImage} />
 
           <Text style={styles.title}>{task.title}</Text>
           <Text style={styles.category}>{task.category}</Text>
-          <Text style={styles.description}>Here's a detailed description of the task. You can put any additional information needed for the user to understand what the task is about.</Text>
-
-          {/* Accept Task Button */}
-          <TouchableOpacity style={styles.acceptButton}>
-            <Text style={styles.buttonText}>Accept Task</Text>
-          </TouchableOpacity>
+          <Text style={styles.description}>{task.startDate}</Text>
+          <Text style={styles.description}>
+            Here's a detailed description of the task. You can put any additional information needed for the user to understand what the task is about.
+          </Text>
+          <Text style={styles.category}>Created By:</Text>
+          <Text style={styles.description}>Name: Ratan J Naik</Text>
+          <Text style={styles.description}>Mobile: 6504479230</Text>
+          <Text style={styles.description}>Email: ratanjn@bu.edu</Text>
+          
+          {showAccept && (
+            <TouchableOpacity style={styles.acceptButton}>
+              <Text style={styles.buttonText}>Accept Task</Text>
+            </TouchableOpacity>
+          )}
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -37,7 +48,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#4a90e2',
-    paddingTop:25
+    paddingTop: 25,
   },
   header: {
     flexDirection: 'row',
@@ -54,12 +65,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginLeft: 20,
   },
-  container: {
+  scrollView: {
     flex: 1,
+  },
+  container: {
     alignItems: 'center',
     justifyContent: 'flex-start',
     padding: 20,
-    backgroundColor: '#4a90e2',
   },
   card: {
     marginTop: 20,
