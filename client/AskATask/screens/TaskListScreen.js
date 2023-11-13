@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
 
-const TaskListScreen = () => {
+const TaskListScreen = (props) => {
   const [filter, setFilter] = useState('All');
 
   // Mock data for tasks
@@ -21,7 +21,7 @@ const TaskListScreen = () => {
 
   // Function to render each task
   const renderTask = ({ item }) => (
-    <TouchableOpacity style={styles.taskCard}>
+    <TouchableOpacity style={styles.taskCard} onPress={() => props.navigation.navigate('Details', { task: item })}>
       <Text style={styles.taskTitle}>{item.title}</Text>
       <Text style={styles.taskCategory}>{item.category}</Text>
     </TouchableOpacity>
