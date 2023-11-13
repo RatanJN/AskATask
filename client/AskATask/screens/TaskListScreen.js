@@ -49,7 +49,7 @@ const TaskListScreen = (props) => {
   const renderTask = ({ item }) => (
     <TouchableOpacity
       style={styles.taskCard}
-      onPress={() => props.navigation.navigate('Details', { task: item })}
+      onPress={() => props.navigation.navigate('Details', { task: item,showAccept:true })}
     >
       <Text style={styles.taskTitle}>{item.title}</Text>
       <Text style={styles.taskCategory}>{item.category}</Text>
