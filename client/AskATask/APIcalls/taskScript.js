@@ -1,13 +1,15 @@
 const API_BASE_URL = 'http://10.0.0.15:3000/api/tasks';
 
-export const createNewTask = async (taskData) => {
+export const createNewTask = async (taskData, token) => {
   try {
+    console.log(JSON.stringify(taskData));
     const response = await fetch(`${API_BASE_URL}/create`, {
       method: 'POST',
-      credentials: 'include', // to send cookies
       headers: {
+        Authorization: `${token}`, // Set the Authorization header manually
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(taskData),
     });
     const data = await response.json();
@@ -85,16 +87,33 @@ export const updateTaskById = async (taskId, updateData) => {
   }
 };
 
-export const acceptTaskById = async (taskId) => {
+export const acceptTaskById = async (taskId, token) => {
   try {
+    console.log(taskId);
     const response = await fetch(`${API_BASE_URL}/accept/${taskId}`, {
       method: 'PUT',
-      credentials: 'include', // to send cookies
+      headers: {
+        Authorization: `${token}`,
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Necessary if the API sets/reads cookies
     });
-    const data = await response.json();
-    console.log(data);
+    if (
+      response.ok &&
+      response.headers.get('content-type')?.includes('application/json')
+    ) {
+      const data = await response.json();
+      return true;
+    } else {
+      // Handle non-JSON responses or errors
+      const text = await response.text();
+      console.error('Non-JSON response:', text);
+      throw new Error('Server did not return a JSON response.');
+      return false;
+    }
   } catch (error) {
-    console.error(error);
+    console.error('Error accepting task:', error);
+    return false;
   }
 };
 

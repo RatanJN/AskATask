@@ -1,14 +1,47 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+  Image,
+} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { acceptTaskById } from '../APIcalls/taskScript';
+import { useAuthToken } from '../Context/AuthTokenProvider';
 
 const TaskDetailScreen = ({ route, navigation }) => {
+  const { authToken } = useAuthToken();
   const { task, showAccept } = route.params;
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const formattedDate = formatDate(task.task_date);
+
+  const handleAcceptTask = async (taskId) => {
+    const token = authToken.split(';')[0];
+    const success = await acceptTaskById(taskId, token);
+    if (success) {
+      // This line is updated to use `navigation.goBack()` directly
+      navigation.goBack(); // Go back to the previous screen, usually the task list
+    } else {
+      // Handle the error case, perhaps showing an alert
+      Alert.alert('Error', 'Failed to accept the task.');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Task Details</Text>
@@ -20,21 +53,27 @@ const TaskDetailScreen = ({ route, navigation }) => {
       >
         <View style={styles.card}>
           {/* Task Image */}
-          <Image source={require('../assets/TodoImage.png')} style={styles.taskImage} />
+          <Image
+            source={require('../assets/TodoImage.png')}
+            style={styles.taskImage}
+          />
 
           <Text style={styles.title}>{task.title}</Text>
-          <Text style={styles.category}>{task.category}</Text>
-          <Text style={styles.description}>{task.startDate}</Text>
+          <Text style={styles.dateStyle}>Start Date: {formattedDate}</Text>
+          <Text style={styles.category}>Category: {task.category}</Text>
           <Text style={styles.description}>
-            Here's a detailed description of the task. You can put any additional information needed for the user to understand what the task is about.
+            Description: {task.description}
           </Text>
           <Text style={styles.category}>Created By:</Text>
           <Text style={styles.description}>Name: Ratan J Naik</Text>
           <Text style={styles.description}>Mobile: 6504479230</Text>
           <Text style={styles.description}>Email: ratanjn@bu.edu</Text>
-          
+
           {showAccept && (
-            <TouchableOpacity style={styles.acceptButton}>
+            <TouchableOpacity
+              style={styles.acceptButton}
+              onPress={() => handleAcceptTask(task._id)}
+            >
               <Text style={styles.buttonText}>Accept Task</Text>
             </TouchableOpacity>
           )}
@@ -89,6 +128,12 @@ const styles = StyleSheet.create({
     height: 250, // Fixed height for the image
     borderRadius: 10, // Round the corners
     marginBottom: 20, // Add some margin below the image
+  },
+  dateStyle: {
+    fontSize: 16,
+    color: 'gray',
+    marginBottom: 10,
+    fontWeight: 'bold',
   },
   title: {
     fontSize: 24,

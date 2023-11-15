@@ -52,7 +52,7 @@ exports.getTasks = (req, res) => {
   today.setUTCHours(0, 0, 0, 0); // Set the time to 00:00:00.000
 
   Task.find({
-    created_by: userId,
+    status: 'Open',
     task_date: { $gte: today }, // $gte selects those documents where the value of the field is greater than or equal to (i.e., >=) the specified value
   })
     .then((tasks) => res.json(tasks))

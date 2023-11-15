@@ -72,7 +72,7 @@ const TaskListScreen = (props) => {
       <View style={styles.filterContainer}>
         {renderFilterButton('All')}
         {renderFilterButton('Academic')}
-        {renderFilterButton('Non-Academic')}
+        {renderFilterButton('Nonacademic')}
       </View>
       <FlatList
         data={filteredTasks}

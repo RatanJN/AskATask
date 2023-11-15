@@ -1,35 +1,69 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, FlatList,Image } from 'react-native';
-
-// Dummy data for tasks
-const tasks = [
-  { id: '1', title: 'Math Homework', category: 'Academic' ,startDate:"2018-01-01"},
-  { id: '2', title: 'English Essay', category: 'Academic' ,startDate:"2018-01-01"},
-  // ...other tasks
-];
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  FlatList,
+  Image,
+} from 'react-native';
+import { getUserDetails } from '../APIcalls/userScript';
+import { useAuthToken } from '../Context/AuthTokenProvider';
 
 const UserDetailsScreen = (props) => {
-  const [activeTab, setActiveTab] = useState('Created');
-  const user={
-    name:"Ratan J Naik",
-    email:"hshsjjsa"
-  }
-
-  const callScreen=(item)=>{
-    if(activeTab=='Created'){
-      props.navigation.navigate('Update Screen', { taskDetails: item, userInfo: user });
-    }else{
-      props.navigation.navigate('TaskDetail Screen', { task: item, showAccept:false });
+  const { authToken } = useAuthToken();
+  const [userDetails, setUserDetails] = useState([]);
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const data = await getUserDetails(authToken.split(';')[0]);
+        console.log(data);
+        setUserDetails(data); // Set the user details with the fetched data
+      } catch (error) {
+        console.error(error);
+        // Handle the error, e.g., showing an alert or setting an error state
+      }
+    };
+    if (authToken) {
+      fetchUserDetails();
     }
-  }
+  }, [authToken]);
+  const [activeTab, setActiveTab] = useState('Created');
+  const user = {
+    name: 'Ratan J Naik',
+    email: 'hshsjjsa',
+  };
+
+  const callScreen = (item) => {
+    if (activeTab == 'Created') {
+      props.navigation.navigate('Update Screen', {
+        taskDetails: item,
+        userInfo: user,
+      });
+    } else {
+      props.navigation.navigate('TaskDetail Screen', {
+        task: item,
+        showAccept: false,
+      });
+    }
+  };
 
   // Function to render each task
   const renderTask = ({ item }) => (
-    <TouchableOpacity style={styles.taskCard} onPress={()=>callScreen(item)}>
+    <TouchableOpacity style={styles.taskCard} onPress={() => callScreen(item)}>
       <Text style={styles.taskTitle}>{item.title}</Text>
       <Text style={styles.taskCategory}>{item.category}</Text>
+      {/* Display date if necessary
+      <Text style={styles.taskDate}>{formatDate(item.task_date)}</Text>
+      */}
     </TouchableOpacity>
   );
+
+  const taskData =
+    activeTab === 'Created'
+      ? userDetails.tasks_created
+      : userDetails.tasks_accepted;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -37,26 +71,32 @@ const UserDetailsScreen = (props) => {
         <Image source={require('../assets/icon.png')} style={styles.logo} />
         <Text style={styles.headerTitle}>User Details</Text>
       </View>
-      
+
       <View style={styles.filterContainer}>
         <TouchableOpacity
           onPress={() => setActiveTab('Created')}
-          style={[styles.filterButton, activeTab === 'Created' && styles.selectedFilterButton]}
+          style={[
+            styles.filterButton,
+            activeTab === 'Created' && styles.selectedFilterButton,
+          ]}
         >
           <Text style={styles.filterText}>Created</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => setActiveTab('Accepted')}
-          style={[styles.filterButton, activeTab === 'Accepted' && styles.selectedFilterButton]}
+          style={[
+            styles.filterButton,
+            activeTab === 'Accepted' && styles.selectedFilterButton,
+          ]}
         >
           <Text style={styles.filterText}>Accepted</Text>
         </TouchableOpacity>
       </View>
 
       <FlatList
-        data={tasks}
+        data={taskData}
         renderItem={renderTask}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id} // Change to _id, which is the unique identifier from the database
         style={styles.list}
       />
     </SafeAreaView>
@@ -67,7 +107,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#4a90e2', // Keeping the background color consistent
-    paddingTop:25
+    paddingTop: 25,
   },
   header: {
     flexDirection: 'row',

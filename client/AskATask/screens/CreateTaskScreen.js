@@ -1,8 +1,20 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, SafeAreaView,Image } from 'react-native';
+import {
+  Alert,
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  Image,
+} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useAuthToken } from '../Context/AuthTokenProvider';
+import { createNewTask } from '../APIcalls/taskScript';
 
-const CreateTaskScreen = () => {
+const CreateTaskScreen = ({ navigation }) => {
+  const { authToken } = useAuthToken();
   const [taskName, setTaskName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState('Academic');
@@ -15,6 +27,25 @@ const CreateTaskScreen = () => {
     setStartDate(currentDate);
   };
 
+  const handleCreateTask = async () => {
+    const token = authToken.split(';')[0]; // Get the token
+    const taskData = {
+      title: taskName,
+      description: description,
+      category: type,
+      task_date: startDate.toISOString(),
+    };
+
+    try {
+      const data = await createNewTask(taskData, token);
+      // Navigate back to the previous screen
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error creating task:', error);
+      // Show an error message
+      Alert.alert('Error', 'Failed to create task. Please try again.');
+    }
+  };
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
@@ -44,13 +75,19 @@ const CreateTaskScreen = () => {
         <Text style={styles.label}>Type:</Text>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={[styles.typeButton, type === 'Academic' && styles.selectedButton]}
+            style={[
+              styles.typeButton,
+              type === 'Academic' && styles.selectedButton,
+            ]}
             onPress={() => setType('Academic')}
           >
             <Text style={styles.buttonText}>Academic</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.typeButton, type === 'Non-Academic' && styles.selectedButton]}
+            style={[
+              styles.typeButton,
+              type === 'Non-Academic' && styles.selectedButton,
+            ]}
             onPress={() => setType('Non-Academic')}
           >
             <Text style={styles.buttonText}>Non-Academic</Text>
@@ -76,8 +113,11 @@ const CreateTaskScreen = () => {
           />
         )}
 
-        <TouchableOpacity style={styles.createButton} onPress={() => {}}>
-          <Text style={styles.createButtonText}>Create Task</Text>
+        <TouchableOpacity
+          style={styles.createButton}
+          onPress={handleCreateTask}
+        >
+          <Text style={styles.buttonText}>Create Task</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -88,7 +128,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#4a90e2',
-    paddingTop:25
+    paddingTop: 25,
   },
   header: {
     padding: 10,

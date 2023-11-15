@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
-  Image,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -43,7 +42,10 @@ const UpdateTask = ({ navigation, route }) => {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
             <Ionicons name="arrow-back" size={24} color="#fff" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Update Task</Text>
@@ -57,7 +59,7 @@ const UpdateTask = ({ navigation, route }) => {
             onChangeText={setTaskName}
             placeholder="Task Name"
           />
-          
+
           <Text style={styles.label}>Description:</Text>
           <TextInput
             style={[styles.input, styles.multilineInput]}
@@ -71,13 +73,19 @@ const UpdateTask = ({ navigation, route }) => {
           <Text style={styles.label}>Category:</Text>
           <View style={styles.categoryContainer}>
             <TouchableOpacity
-              style={[styles.categoryButton, category === 'Academic' && styles.selectedCategory]}
+              style={[
+                styles.categoryButton,
+                category === 'Academic' && styles.selectedCategory,
+              ]}
               onPress={() => setCategory('Academic')}
             >
               <Text style={styles.categoryText}>Academic</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.categoryButton, category === 'Non-Academic' && styles.selectedCategory]}
+              style={[
+                styles.categoryButton,
+                category === 'Non-Academic' && styles.selectedCategory,
+              ]}
               onPress={() => setCategory('Non-Academic')}
             >
               <Text style={styles.categoryText}>Non-Academic</Text>
@@ -87,7 +95,8 @@ const UpdateTask = ({ navigation, route }) => {
           <Text style={styles.label}>Start Date:</Text>
           <TouchableOpacity
             style={styles.input}
-            onPress={() => setShowDatePicker(true)}>
+            onPress={() => setShowDatePicker(true)}
+          >
             <Text style={styles.dateText}>{startDate.toDateString()}</Text>
           </TouchableOpacity>
           {showDatePicker && (
@@ -111,7 +120,10 @@ const UpdateTask = ({ navigation, route }) => {
             <TouchableOpacity style={styles.actionButton} onPress={reopenTask}>
               <Text style={styles.actionButtonText}>Reopen Task</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton} onPress={completeTask}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={completeTask}
+            >
               <Text style={styles.actionButtonText}>Close Task</Text>
             </TouchableOpacity>
           </View>
@@ -125,7 +137,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#4a90e2',
-    padding:25
+    padding: 25,
   },
   container: {
     flex: 1,
