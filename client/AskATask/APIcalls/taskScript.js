@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://10.0.0.43:3000/api/tasks';
+const API_BASE_URL = 'http://10.0.0.15:3000/api/tasks';
 
 export const createNewTask = async (taskData) => {
   try {
@@ -11,9 +11,7 @@ export const createNewTask = async (taskData) => {
       body: JSON.stringify(taskData),
     });
     const data = await response.json();
-    const header=await response.header;
-    console.log(header)
-    console.log(data);
+    const header = await response.header;
   } catch (error) {
     console.error(error);
   }
@@ -27,7 +25,7 @@ export const getAllTasks = async (token) => {
         Authorization: `${token}`, // Set the Authorization header manually
         'Content-Type': 'application/json',
       },
-      credentials: 'include', // Only necessary if your endpoint is expecting cookies to be sent
+      useCredentials: true, // Only necessary if your endpoint is expecting cookies to be sent
     });
 
     if (

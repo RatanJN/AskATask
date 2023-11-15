@@ -1,10 +1,10 @@
-import { useContext } from "react";
-import { createContext, useState } from "react";
+import { useContext } from 'react';
+import { createContext, useState } from 'react';
 
 const AuthTokenContext = createContext();
 
 const AuthTokenProvider = ({ children }) => {
-  const [authToken, setAuthToken] = useState("");
+  const [authToken, setAuthToken] = useState('');
   return (
     <AuthTokenContext.Provider value={{ authToken, setAuthToken }}>
       {children}
@@ -12,5 +12,4 @@ const AuthTokenProvider = ({ children }) => {
   );
 };
 export const useAuthToken = () => useContext(AuthTokenContext);
-
 export default AuthTokenProvider;

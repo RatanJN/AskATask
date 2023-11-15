@@ -8,37 +8,29 @@ import {
   Image,
 } from 'react-native';
 import { getAllTasks } from '../APIcalls/taskScript';
+import { useAuthToken } from '../Context/AuthTokenProvider';
 
 const TaskListScreen = (props) => {
   const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState('All');
 
-  // // Mock data for tasks
-  // const tasks = [
-  //   { id: '1', title: 'Math Homework', category: 'Academic' },
-  //   { id: '2', title: 'English Essay', category: 'Academic' },
-  //   { id: '3', title: 'Science Project', category: 'Academic' },
-  //   { id: '4', title: 'Grocery Shopping', category: 'Non-Academic' },
-  //   { id: '5', title: 'Car Wash', category: 'Non-Academic' },
-  //   // ...other tasks
-  // ];
+  const { authToken } = useAuthToken();
 
   useEffect(() => {
-    const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NGZhNjc2Mjc3MDhkMTU4MDQwZjY2ZSIsIm5hbWUiOiJBbWFuIEt1bWFyIiwiaWF0IjoxNjk5ODU1NTA0LCJleHAiOjE2OTk4OTE1MDR9.3JzbpsqGORY2_hbda88AUbP3A-ud2AmwurFN7O99nEc';
-
     const fetchTasks = async () => {
       try {
-        const data = await getAllTasks(token);
+        const data = await getAllTasks(authToken.split(';')[0]);
+        console.log(data);
         setTasks(data); // Assuming the data returned is an array of tasks
       } catch (error) {
         console.error(error);
         // Handle the error, e.g., showing an alert or setting an error state
       }
     };
-
-    fetchTasks();
-  }, []);
+    if (authToken) {
+      fetchTasks();
+    }
+  }, [authToken]);
 
   const filteredTasks = tasks.filter((task) => {
     if (filter === 'All') return true;
@@ -49,7 +41,9 @@ const TaskListScreen = (props) => {
   const renderTask = ({ item }) => (
     <TouchableOpacity
       style={styles.taskCard}
-      onPress={() => props.navigation.navigate('Details', { task: item,showAccept:true })}
+      onPress={() =>
+        props.navigation.navigate('Details', { task: item, showAccept: true })
+      }
     >
       <Text style={styles.taskTitle}>{item.title}</Text>
       <Text style={styles.taskCategory}>{item.category}</Text>
