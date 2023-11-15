@@ -18,7 +18,6 @@ const UserDetailsScreen = (props) => {
     const fetchUserDetails = async () => {
       try {
         const data = await getUserDetails(authToken.split(';')[0]);
-        console.log(data);
         setUserDetails(data); // Set the user details with the fetched data
       } catch (error) {
         console.error(error);
@@ -29,6 +28,7 @@ const UserDetailsScreen = (props) => {
       fetchUserDetails();
     }
   }, [authToken]);
+
   const [activeTab, setActiveTab] = useState('Created');
   const user = {
     name: 'Ratan J Naik',
@@ -50,15 +50,21 @@ const UserDetailsScreen = (props) => {
   };
 
   // Function to render each task
-  const renderTask = ({ item }) => (
-    <TouchableOpacity style={styles.taskCard} onPress={() => callScreen(item)}>
-      <Text style={styles.taskTitle}>{item.title}</Text>
-      <Text style={styles.taskCategory}>{item.category}</Text>
-      {/* Display date if necessary
-      <Text style={styles.taskDate}>{formatDate(item.task_date)}</Text>
-      */}
-    </TouchableOpacity>
-  );
+  const renderTask = ({ item }) =>
+    activeTab === 'Created' && item.status === 'Closed' ? (
+      <View style={styles.closedTaskCard}>
+        <Text style={styles.taskTitle}>{item.title}</Text>
+        <Text style={styles.taskCategory}> Closed </Text>
+      </View>
+    ) : (
+      <TouchableOpacity
+        style={styles.taskCard}
+        onPress={() => callScreen(item)}
+      >
+        <Text style={styles.taskTitle}>{item.title}</Text>
+        <Text style={styles.taskCategory}>{item.category}</Text>
+      </TouchableOpacity>
+    );
 
   const taskData =
     activeTab === 'Created'
@@ -151,6 +157,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#4a90e2', // Keeping the list background color consistent
   },
   taskCard: {
+    backgroundColor: '#fff',
+    padding: 20,
+    marginHorizontal: 20,
+    marginVertical: 10,
+    borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  closedTaskCard: {
     backgroundColor: '#fff',
     padding: 20,
     marginHorizontal: 20,

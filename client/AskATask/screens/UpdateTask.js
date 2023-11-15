@@ -10,14 +10,25 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useAuthToken } from '../Context/AuthTokenProvider';
+import { updateTaskById, closeTaskById } from '../APIcalls/taskScript';
 
 const UpdateTask = ({ navigation, route }) => {
+  const { authToken } = useAuthToken();
   const { taskDetails, userInfo } = route.params;
 
   const [taskName, setTaskName] = useState(taskDetails.title);
   const [description, setDescription] = useState(taskDetails.description);
   const [category, setCategory] = useState(taskDetails.category); // New state for category
-  const [startDate, setStartDate] = useState(new Date(taskDetails.startDate));
+
+  const getInitialDate = () => {
+    if (taskDetails.startDate && !isNaN(Date.parse(taskDetails.startDate))) {
+      return new Date(taskDetails.startDate);
+    }
+    return new Date();
+  };
+
+  const [startDate, setStartDate] = useState(getInitialDate());
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const onDateChange = (event, selectedDate) => {
@@ -26,16 +37,55 @@ const UpdateTask = ({ navigation, route }) => {
     setStartDate(currentDate);
   };
 
-  const updateTaskDetails = () => {
-    // Update logic goes here
+  const updateTaskDetails = async () => {
+    const payload = {
+      title: taskName,
+      description: description,
+      category: category,
+      task_date: startDate.toISOString(), // Ensure the date is in the correct format
+    };
+
+    try {
+      const data = await updateTaskById(
+        taskDetails._id,
+        payload,
+        authToken.split(';')[0]
+      );
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error updating task:', error);
+      alert(error.message || 'An error occurred. Please try again.');
+    }
   };
 
-  const reopenTask = () => {
-    // Logic for reopening the task goes here
+  const reopenTask = async () => {
+    const payload = {
+      status: 'Open',
+    };
+    try {
+      const data = await updateTaskById(
+        taskDetails._id,
+        payload,
+        authToken.split(';')[0]
+      );
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error updating task:', error);
+      alert(error.message || 'An error occurred. Please try again.');
+    }
   };
 
-  const completeTask = () => {
-    // Logic for marking the task as completed goes here
+  const completeTask = async () => {
+    try {
+      const data = await closeTaskById(
+        taskDetails._id,
+        authToken.split(';')[0]
+      );
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error updating task:', error);
+      alert(error.message || 'An error occurred. Please try again.');
+    }
   };
 
   return (

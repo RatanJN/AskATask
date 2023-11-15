@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://10.0.0.15:3000/api/tasks';
+const API_BASE_URL = 'http://10.0.0.13:3000/api/tasks';
 
 export const createNewTask = async (taskData, token) => {
   try {
@@ -70,26 +70,38 @@ export const getMyTasks = async () => {
   }
 };
 
-export const updateTaskById = async (taskId, updateData) => {
+export const updateTaskById = async (taskId, updateData, token) => {
   try {
     const response = await fetch(`${API_BASE_URL}/${taskId}`, {
       method: 'PUT',
-      credentials: 'include', // to send cookies
       headers: {
+        Authorization: `${token}`,
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(updateData),
     });
-    const data = await response.json();
-    console.log(data);
+
+    const data = await response.json(); // Always parse the response to JSON
+
+    if (!response.ok) {
+      // Include more details in the error message
+      const errorDetail = data.message || 'Unknown error occurred'; // Adjust depending on how your API structures error messages
+      throw new Error(`Failed to update the task: ${errorDetail}`);
+    }
+
+    console.log('Update successful:', data);
+
+    // Return the parsed data (which should contain the updated task details)
+    return data;
   } catch (error) {
-    console.error(error);
+    console.error('Error updating task:', error.message);
+    throw new Error(error.message); // Re-throw the error with the message
   }
 };
 
 export const acceptTaskById = async (taskId, token) => {
   try {
-    console.log(taskId);
     const response = await fetch(`${API_BASE_URL}/accept/${taskId}`, {
       method: 'PUT',
       headers: {
@@ -117,11 +129,16 @@ export const acceptTaskById = async (taskId, token) => {
   }
 };
 
-export const closeTaskById = async (taskId) => {
+export const closeTaskById = async (taskId, token) => {
   try {
+    console.log(token);
     const response = await fetch(`${API_BASE_URL}/close/${taskId}`, {
       method: 'PUT',
-      credentials: 'include', // to send cookies
+      headers: {
+        Authorization: `${token}`,
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
     });
     const data = await response.json();
     console.log(data);
