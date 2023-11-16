@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,20 +6,22 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
-} from 'react-native';
-import { getAllTasks } from '../APIcalls/taskScript';
-import { useAuthToken } from '../Context/AuthTokenProvider';
+} from "react-native";
+import { getAllTasks } from "../APIcalls/taskScript";
+import { useAuthToken } from "../Context/AuthTokenProvider";
+import { useRefresh } from "../Context/RefreshProvider";
 
 const TaskListScreen = (props) => {
   const [tasks, setTasks] = useState([]);
-  const [filter, setFilter] = useState('All');
+  const [filter, setFilter] = useState("All");
+  const { refresh } = useRefresh();
 
   const { authToken } = useAuthToken();
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const data = await getAllTasks(authToken.split(';')[0]);
+        const data = await getAllTasks(authToken.split(";")[0]);
         console.log(data);
         setTasks(data); // Assuming the data returned is an array of tasks
       } catch (error) {
@@ -30,10 +32,10 @@ const TaskListScreen = (props) => {
     if (authToken) {
       fetchTasks();
     }
-  }, [authToken]);
+  }, [authToken, refresh]);
 
   const filteredTasks = tasks.filter((task) => {
-    if (filter === 'All') return true;
+    if (filter === "All") return true;
     return task.category === filter;
   });
 
@@ -42,7 +44,7 @@ const TaskListScreen = (props) => {
     <TouchableOpacity
       style={styles.taskCard}
       onPress={() =>
-        props.navigation.navigate('Details', { task: item, showAccept: true })
+        props.navigation.navigate("Details", { task: item, showAccept: true })
       }
     >
       <Text style={styles.taskTitle}>{item.title}</Text>
@@ -66,13 +68,13 @@ const TaskListScreen = (props) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={require('../assets/icon.png')} style={styles.logo} />
+        <Image source={require("../assets/icon.png")} style={styles.logo} />
         <Text style={styles.headerTitle}>AskATask</Text>
       </View>
       <View style={styles.filterContainer}>
-        {renderFilterButton('All')}
-        {renderFilterButton('Academic')}
-        {renderFilterButton('Nonacademic')}
+        {renderFilterButton("All")}
+        {renderFilterButton("Academic")}
+        {renderFilterButton("Nonacademic")}
       </View>
       <FlatList
         data={filteredTasks}
@@ -87,12 +89,12 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: 40,
     flex: 1,
-    backgroundColor: '#4a90e2',
+    backgroundColor: "#4a90e2",
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 20,
   },
   logo: {
@@ -103,44 +105,44 @@ const styles = StyleSheet.create({
   headerTitle: {
     marginLeft: 10,
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
   },
   filterContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 20,
-    justifyContent: 'space-around',
+    justifyContent: "space-around",
   },
   filterButton: {
     padding: 10,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'white',
+    borderColor: "white",
   },
   selectedFilterButton: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   filterText: {
-    color: 'black',
-    fontWeight: 'bold',
+    color: "black",
+    fontWeight: "bold",
   },
   taskCard: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 20,
     marginVertical: 10,
     marginHorizontal: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   taskTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   taskCategory: {
     fontSize: 14,
-    color: '#a9a9a9',
+    color: "#a9a9a9",
   },
 });
 

@@ -1,14 +1,14 @@
-const API_BASE_URL = 'http://10.0.0.13:3000';
+const API_BASE_URL = "http://10.0.0.43:3000";
 
 export const getUserDetails = async (token) => {
   try {
     const response = await fetch(`${API_BASE_URL}/user`, {
-      method: 'GET',
+      method: "GET",
       headers: {
         Authorization: `${token}`, // Set the Authorization header manually if needed
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      credentials: 'include', // Only necessary if your endpoint is expecting cookies to be sent
+      credentials: "include", // Only necessary if your endpoint is expecting cookies to be sent
     });
 
     if (response.ok) {
@@ -18,10 +18,10 @@ export const getUserDetails = async (token) => {
       // If the response was not ok, handle it here
       const text = await response.text(); // This could be an HTML error page or error message
       console.log(text);
-      throw new Error('Server did not return a JSON response.');
+      throw new Error("Server did not return a JSON response.");
     }
   } catch (error) {
-    console.error('Error fetching user details:', error);
+    console.error("Error fetching user details:", error);
     throw error;
   }
 };
