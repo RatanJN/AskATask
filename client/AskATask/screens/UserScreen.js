@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,13 +9,13 @@ import {
   Image,
   Modal,
   Button,
-} from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
-import { getUserDetails } from "../APIcalls/userScript";
-import { useAuthToken } from "../Context/AuthTokenProvider";
-import { useRefresh } from "../Context/RefreshProvider";
-import { useLogin } from "../Context/LoginProvider";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { getUserDetails } from '../APIcalls/userScript';
+import { useAuthToken } from '../Context/AuthTokenProvider';
+import { useRefresh } from '../Context/RefreshProvider';
+import { useLogin } from '../Context/LoginProvider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const UserDetailsScreen = (props) => {
   const { authToken } = useAuthToken();
@@ -27,7 +27,7 @@ const UserDetailsScreen = (props) => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const data = await getUserDetails(authToken.split(";")[0]);
+        const data = await getUserDetails(authToken.split(';')[0]);
         setUserDetails(data);
       } catch (error) {
         console.error(error);
@@ -38,16 +38,16 @@ const UserDetailsScreen = (props) => {
     }
   }, [authToken, refresh]);
 
-  const [activeTab, setActiveTab] = useState("Created");
+  const [activeTab, setActiveTab] = useState('Created');
 
   const callScreen = (item) => {
-    if (activeTab == "Created") {
-      props.navigation.navigate("Update Screen", {
+    if (activeTab == 'Created') {
+      props.navigation.navigate('Update Screen', {
         taskDetails: item,
-        userInfo: user,
+        userInfo: userDetails,
       });
     } else {
-      props.navigation.navigate("TaskDetail Screen", {
+      props.navigation.navigate('TaskDetail Screen', {
         task: item,
         showAccept: false,
       });
@@ -55,7 +55,7 @@ const UserDetailsScreen = (props) => {
   };
 
   const renderTask = ({ item }) =>
-    activeTab === "Created" && item.status === "Closed" ? (
+    activeTab === 'Created' && item.status === 'Closed' ? (
       <View style={styles.closedTaskCard}>
         <Text style={styles.taskTitle}>{item.title}</Text>
         <Text style={styles.taskCategory}> Closed </Text>
@@ -71,13 +71,13 @@ const UserDetailsScreen = (props) => {
     );
 
   const taskData =
-    activeTab === "Created"
+    activeTab === 'Created'
       ? userDetails.tasks_created
       : userDetails.tasks_accepted;
 
   const logout = async () => {
-    await AsyncStorage.setItem("email", "");
-    await AsyncStorage.setItem("pwd", "");
+    await AsyncStorage.setItem('email', '');
+    await AsyncStorage.setItem('pwd', '');
     setIsLoggedIn(false);
     setModalVisible(false);
   };
@@ -85,7 +85,7 @@ const UserDetailsScreen = (props) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Image source={require("../assets/icon.png")} style={styles.logo} />
+        <Image source={require('../assets/icon.png')} style={styles.logo} />
         <Text style={styles.headerTitle}>User Details</Text>
         <TouchableOpacity
           style={styles.iconButton}
@@ -97,19 +97,19 @@ const UserDetailsScreen = (props) => {
 
       <View style={styles.filterContainer}>
         <TouchableOpacity
-          onPress={() => setActiveTab("Created")}
+          onPress={() => setActiveTab('Created')}
           style={[
             styles.filterButton,
-            activeTab === "Created" && styles.selectedFilterButton,
+            activeTab === 'Created' && styles.selectedFilterButton,
           ]}
         >
           <Text style={styles.filterText}>Created</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setActiveTab("Accepted")}
+          onPress={() => setActiveTab('Accepted')}
           style={[
             styles.filterButton,
-            activeTab === "Accepted" && styles.selectedFilterButton,
+            activeTab === 'Accepted' && styles.selectedFilterButton,
           ]}
         >
           <Text style={styles.filterText}>Accepted</Text>
@@ -134,8 +134,34 @@ const UserDetailsScreen = (props) => {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>User Details</Text>
-            <Text>Name: {userDetails.name}</Text>
-            <Text>Email: {userDetails.email}</Text>
+            <View style={styles.userDetailRow}>
+              <Icon
+                name="user"
+                size={20}
+                color="#4a90e2"
+                style={styles.iconStyle}
+              />
+              <Text>Name: {userDetails.name}</Text>
+            </View>
+            <View style={styles.userDetailRow}>
+              <Icon
+                name="envelope"
+                size={20}
+                color="#4a90e2"
+                style={styles.iconStyle}
+              />
+              <Text>Email: {userDetails.bu_email}</Text>
+            </View>
+            <View style={styles.userDetailRow}>
+              <Icon
+                name="phone"
+                size={20}
+                color="#4a90e2"
+                style={styles.iconStyle}
+              />
+              <Text>Phone number: {userDetails.phone_number}</Text>
+            </View>
+
             <Button title="Logout" onPress={logout} />
             <Button title="Close" onPress={() => setModalVisible(false)} />
           </View>
@@ -148,14 +174,14 @@ const UserDetailsScreen = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#4a90e2", // Keeping the background color consistent
+    backgroundColor: '#4a90e2', // Keeping the background color consistent
     paddingTop: 25,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#4a90e2",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#4a90e2',
     paddingVertical: 10,
   },
   logo: {
@@ -164,15 +190,15 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   headerTitle: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginLeft: 10,
   },
   filterContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "#4a90e2",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#4a90e2',
     paddingVertical: 10,
   },
   filterButton: {
@@ -180,60 +206,60 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "white",
+    borderColor: 'white',
   },
   selectedFilterButton: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
   },
   filterText: {
-    color: "black",
-    fontWeight: "bold",
+    color: 'black',
+    fontWeight: 'bold',
   },
   list: {
-    backgroundColor: "#4a90e2", // Keeping the list background color consistent
+    backgroundColor: '#4a90e2', // Keeping the list background color consistent
   },
   taskCard: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     padding: 20,
     marginHorizontal: 20,
     marginVertical: 10,
     borderRadius: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   closedTaskCard: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     padding: 20,
     marginHorizontal: 20,
     marginVertical: 10,
     borderRadius: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   taskTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#333", // Text color for better readability
+    fontWeight: 'bold',
+    color: '#333', // Text color for better readability
   },
   taskCategory: {
     fontSize: 14,
-    color: "#666",
+    color: '#666',
   },
   centeredView: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 22,
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -244,13 +270,15 @@ const styles = StyleSheet.create({
   },
   modalText: {
     marginBottom: 15,
-    textAlign: "center",
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between", // Adjusted for spacing
-    backgroundColor: "#4a90e2",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between', // Adjusted for spacing
+    backgroundColor: '#4a90e2',
     paddingVertical: 10,
     paddingHorizontal: 10, // Added padding
   },
@@ -261,7 +289,15 @@ const styles = StyleSheet.create({
   iconText: {
     // Temporary style for the placeholder icon
     fontSize: 24,
-    color: "#fff",
+    color: '#fff',
+  },
+  userDetailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  iconStyle: {
+    marginRight: 8,
   },
 });
 

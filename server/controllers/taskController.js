@@ -160,10 +160,15 @@ exports.acceptTask = (req, res) => {
   )
     .then((task) => {
       if (!task) {
-        return res.status(404).json({
-          error:
-            "Task not found, it's already accepted by someone else, or you are trying to accept your own task.",
-        });
+        if (task.created_by.toString() === userId.toString()) {
+          return res
+            .status(400)
+            .json({ error: 'You cannot accept your own task' });
+        } else {
+          return res.status(404).json({
+            error: "Task not found, it's already accepted by someone else.",
+          });
+        }
       }
 
       // After successfully updating the task, update the user's tasks_accepted

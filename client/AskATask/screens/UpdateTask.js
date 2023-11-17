@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,13 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
-} from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { useAuthToken } from "../Context/AuthTokenProvider";
-import { updateTaskById, closeTaskById } from "../APIcalls/taskScript";
-import { useRefresh } from "../Context/RefreshProvider";
+} from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useAuthToken } from '../Context/AuthTokenProvider';
+import { updateTaskById, closeTaskById } from '../APIcalls/taskScript';
+import { useRefresh } from '../Context/RefreshProvider';
+import { fetchCreatorDetails } from '../APIcalls/userScript';
 
 const UpdateTask = ({ navigation, route }) => {
   const { authToken } = useAuthToken();
@@ -22,6 +23,7 @@ const UpdateTask = ({ navigation, route }) => {
   const [taskName, setTaskName] = useState(taskDetails.title);
   const [description, setDescription] = useState(taskDetails.description);
   const [category, setCategory] = useState(taskDetails.category); // New state for category
+  const [userDetails, setUserDetails] = useState(null);
 
   const getInitialDate = () => {
     if (taskDetails.startDate && !isNaN(Date.parse(taskDetails.startDate))) {
@@ -51,31 +53,31 @@ const UpdateTask = ({ navigation, route }) => {
       const data = await updateTaskById(
         taskDetails._id,
         payload,
-        authToken.split(";")[0]
+        authToken.split(';')[0]
       );
       setRefresh(!refresh);
       navigation.goBack();
     } catch (error) {
-      console.error("Error updating task:", error);
-      alert(error.message || "An error occurred. Please try again.");
+      console.error('Error updating task:', error);
+      alert(error.message || 'An error occurred. Please try again.');
     }
   };
 
   const reopenTask = async () => {
     const payload = {
-      status: "Open",
+      status: 'Open',
     };
     try {
       const data = await updateTaskById(
         taskDetails._id,
         payload,
-        authToken.split(";")[0]
+        authToken.split(';')[0]
       );
       setRefresh(!refresh);
       navigation.goBack();
     } catch (error) {
-      console.error("Error updating task:", error);
-      alert(error.message || "An error occurred. Please try again.");
+      console.error('Error updating task:', error);
+      alert(error.message || 'An error occurred. Please try again.');
     }
   };
 
@@ -83,16 +85,26 @@ const UpdateTask = ({ navigation, route }) => {
     try {
       const data = await closeTaskById(
         taskDetails._id,
-        authToken.split(";")[0]
+        authToken.split(';')[0]
       );
       setRefresh(!refresh);
       navigation.goBack();
     } catch (error) {
-      console.error("Error updating task:", error);
-      alert(error.message || "An error occurred. Please try again.");
+      console.error('Error updating task:', error);
+      alert(error.message || 'An error occurred. Please try again.');
     }
   };
 
+  useEffect(() => {
+    if (taskDetails.status === 'Active') {
+      fetchCreatorDetails(
+        taskDetails.accepted_by,
+        authToken.split(';')[0]
+      ).then((details) => {
+        setUserDetails(details);
+      });
+    }
+  }, [taskDetails]);
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
@@ -130,18 +142,18 @@ const UpdateTask = ({ navigation, route }) => {
             <TouchableOpacity
               style={[
                 styles.categoryButton,
-                category === "Academic" && styles.selectedCategory,
+                category === 'Academic' && styles.selectedCategory,
               ]}
-              onPress={() => setCategory("Academic")}
+              onPress={() => setCategory('Academic')}
             >
               <Text style={styles.categoryText}>Academic</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.categoryButton,
-                category === "Non-Academic" && styles.selectedCategory,
+                category === 'Non-Academic' && styles.selectedCategory,
               ]}
-              onPress={() => setCategory("Non-Academic")}
+              onPress={() => setCategory('Non-Academic')}
             >
               <Text style={styles.categoryText}>Non-Academic</Text>
             </TouchableOpacity>
@@ -162,14 +174,30 @@ const UpdateTask = ({ navigation, route }) => {
               onChange={onDateChange}
             />
           )}
-
-          <Text style={styles.label}>Accepted By:</Text>
-          <Text style={styles.userInfoText}>Name: {userInfo.name}</Text>
-          <Text style={styles.userInfoText}>Email: {userInfo.email}</Text>
-          <Text style={styles.userInfoText}>Mobile: 6504479230</Text>
-          <TouchableOpacity style={styles.button} onPress={updateTaskDetails}>
-            <Text style={styles.buttonText}>Save Changes</Text>
-          </TouchableOpacity>
+          {taskDetails.status === 'Open' ? (
+            <Text style={styles.label}>
+              This task has not been accepted by anyone yet!
+            </Text>
+          ) : userDetails ? (
+            <>
+              <Text style={styles.label}>Accepted By:</Text>
+              <Text style={styles.userInfoText}>Name: {userDetails.name}</Text>
+              <Text style={styles.userInfoText}>
+                Email: {userDetails.bu_email}
+              </Text>
+              <Text style={styles.userInfoText}>
+                Mobile: {userDetails.phone_number}
+              </Text>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={updateTaskDetails}
+              >
+                <Text style={styles.buttonText}>Save Changes</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <Text style={styles.label}>Loading user details...</Text>
+          )}
 
           <View style={styles.actionButtonsContainer}>
             <TouchableOpacity style={styles.actionButton} onPress={reopenTask}>
@@ -191,21 +219,21 @@ const UpdateTask = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#4a90e2",
+    backgroundColor: '#4a90e2',
     padding: 25,
   },
   container: {
     flex: 1,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#4a90e2",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#4a90e2',
     paddingVertical: 10,
   },
   backButton: {
-    position: "absolute",
+    position: 'absolute',
     left: 10,
     top: 10,
     zIndex: 10,
@@ -214,32 +242,32 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    position: "absolute",
+    position: 'absolute',
     left: 20,
     top: 10,
   },
   headerTitle: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginTop: 10,
   },
   form: {
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
   label: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 10,
-    color: "#333",
+    color: '#333',
   },
   input: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#f0f0f0',
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: '#ddd',
     padding: 10,
     borderRadius: 10,
     marginBottom: 15,
@@ -253,24 +281,24 @@ const styles = StyleSheet.create({
   },
   userInfoText: {
     fontSize: 16,
-    color: "#333",
+    color: '#333',
     marginBottom: 20,
   },
   button: {
-    backgroundColor: "#4a90e2",
+    backgroundColor: '#4a90e2',
     padding: 15,
     borderRadius: 10,
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 10,
   },
   buttonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   actionButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: 10,
   },
   actionButton: {
@@ -278,36 +306,36 @@ const styles = StyleSheet.create({
     padding: 15,
     margin: 5,
     borderRadius: 10,
-    alignItems: "center",
-    backgroundColor: "#5cb85c",
+    alignItems: 'center',
+    backgroundColor: '#5cb85c',
   },
   actionButtonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   categoryContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 15,
   },
   categoryButton: {
     flex: 1,
     padding: 10,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: '#ddd',
     borderRadius: 10,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#f0f0f0',
     marginHorizontal: 5,
-    alignItems: "center",
+    alignItems: 'center',
   },
   selectedCategory: {
-    backgroundColor: "#4a90e2",
-    borderColor: "#4a90e2",
+    backgroundColor: '#4a90e2',
+    borderColor: '#4a90e2',
   },
   categoryText: {
-    color: "#333",
-    fontWeight: "bold",
+    color: '#333',
+    fontWeight: 'bold',
   },
 });
 
