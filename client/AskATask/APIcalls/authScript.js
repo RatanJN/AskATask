@@ -1,7 +1,6 @@
 const API_BASE_URL = 'http://10.0.0.13:3000'; // Ensure correct protocol and IP address
 
 export const registerUser = async (userData) => {
-  console.log(JSON.stringify(userData));
   try {
     const response = await fetch(`${API_BASE_URL}/register`, {
       method: 'POST',
@@ -11,7 +10,6 @@ export const registerUser = async (userData) => {
       body: JSON.stringify(userData),
     });
     const data = await response.json();
-    console.log('Registration successful', data);
     return true;
   } catch (error) {
     console.error('Registration failed', error);
@@ -29,9 +27,6 @@ export const loginUser = async (credentials) => {
       body: JSON.stringify(credentials),
       credentials: 'include', // to ensure cookies are included with the request
     });
-    //const data = await response.json();
-    // setAuthToken(response.headers.map["set-cookie"]);
-    // console.log(authToken);
     return response;
     // Handle successful login, e.g., redirecting to the dashboard or storing the response in the state/context
   } catch (error) {

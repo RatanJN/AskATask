@@ -17,7 +17,6 @@ export const getUserDetails = async (token) => {
     } else {
       // If the response was not ok, handle it here
       const text = await response.text(); // This could be an HTML error page or error message
-      console.log(text);
       throw new Error('Server did not return a JSON response.');
     }
   } catch (error) {

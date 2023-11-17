@@ -2,7 +2,6 @@ const API_BASE_URL = 'http://10.0.0.13:3000/api/tasks';
 
 export const createNewTask = async (taskData, token) => {
   try {
-    console.log(token);
     const response = await fetch(`${API_BASE_URL}/create`, {
       method: 'POST',
       headers: {
@@ -38,7 +37,6 @@ export const getAllTasks = async (token) => {
       return data;
     } else {
       const text = await response.text();
-      console.log(text);
       throw new Error('Server did not return a JSON response.');
     }
   } catch (error) {
@@ -52,7 +50,6 @@ export const getTaskById = async (taskId) => {
       credentials: 'include', // to send cookies
     });
     const data = await response.json();
-    console.log(data);
   } catch (error) {
     console.error(error);
   }
@@ -64,7 +61,6 @@ export const getMyTasks = async () => {
       credentials: 'include', // to send cookies
     });
     const data = await response.json();
-    console.log(data);
   } catch (error) {
     console.error(error);
   }
@@ -89,8 +85,6 @@ export const updateTaskById = async (taskId, updateData, token) => {
       const errorDetail = data.message || 'Unknown error occurred'; // Adjust depending on how your API structures error messages
       throw new Error(`Failed to update the task: ${errorDetail}`);
     }
-
-    console.log('Update successful:', data);
 
     // Return the parsed data (which should contain the updated task details)
     return data;
@@ -130,7 +124,6 @@ export const acceptTaskById = async (taskId, token) => {
 
 export const closeTaskById = async (taskId, token) => {
   try {
-    console.log(token);
     const response = await fetch(`${API_BASE_URL}/close/${taskId}`, {
       method: 'PUT',
       headers: {
@@ -140,7 +133,6 @@ export const closeTaskById = async (taskId, token) => {
       credentials: 'include',
     });
     const data = await response.json();
-    console.log(data);
   } catch (error) {
     console.error(error);
   }
@@ -153,7 +145,6 @@ export const deleteTaskById = async (taskId) => {
       credentials: 'include', // to send cookies
     });
     const data = await response.json();
-    console.log(data);
   } catch (error) {
     console.error(error);
   }
