@@ -21,7 +21,7 @@ const LoginScreen = (props) => {
 
   const handleLogin = async () => {
     try {
-      const response = await loginUser({ bu_email: email, password: password });
+      const response = await loginUser({ bu_email: email.toLowerCase(), password: password });
       const data = await response.json();
       if (Object.keys(data).includes('message')) {
         setIsLoggedIn(true); // Set logged in state
