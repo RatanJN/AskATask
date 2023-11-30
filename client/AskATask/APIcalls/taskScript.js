@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://10.0.0.13:3000/api/tasks';
+const API_BASE_URL = 'http://10.239.66.104:3000/api/tasks';
 
 export const createNewTask = async (taskData, token) => {
   try {

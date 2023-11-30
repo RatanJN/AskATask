@@ -21,7 +21,10 @@ const LoginScreen = (props) => {
 
   const handleLogin = async () => {
     try {
-      const response = await loginUser({ bu_email: email, password: password });
+      const response = await loginUser({
+        bu_email: email.toLowerCase(),
+        password: password,
+      });
       const data = await response.json();
       if (Object.keys(data).includes('message')) {
         setIsLoggedIn(true); // Set logged in state
@@ -72,10 +75,9 @@ const LoginScreen = (props) => {
 
       <View style={styles.linksContainer}>
         <TouchableOpacity onPress={() => signupPage()}>
-          <Text style={styles.linkText}>Signup</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => signupPage()}>
-          <Text style={styles.linkText}>Forgot Password?</Text>
+          <Text style={styles.linkText}>
+            Not a registered user? Click here!
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -124,14 +126,15 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   linksContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 20,
   },
   linkText: {
     color: '#FFF',
     fontSize: 16,
     textDecorationLine: 'underline',
+    fontWeight: 'bold',
   },
 });
 

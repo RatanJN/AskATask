@@ -64,6 +64,10 @@ const UpdateTask = ({ navigation, route }) => {
   };
 
   const reopenTask = async () => {
+    if (taskDetails.status === 'Open') {
+      alert('Task is already open!');
+      return;
+    }
     const payload = {
       status: 'Open',
     };
@@ -151,11 +155,11 @@ const UpdateTask = ({ navigation, route }) => {
             <TouchableOpacity
               style={[
                 styles.categoryButton,
-                category === 'Non-Academic' && styles.selectedCategory,
+                category === 'Nonacademic' && styles.selectedCategory,
               ]}
-              onPress={() => setCategory('Non-Academic')}
+              onPress={() => setCategory('Nonacademic')}
             >
-              <Text style={styles.categoryText}>Non-Academic</Text>
+              <Text style={styles.categoryText}>Nonacademic</Text>
             </TouchableOpacity>
           </View>
 
