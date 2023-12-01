@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://10.239.66.104:3000'; // Ensure correct protocol and IP address
+const API_BASE_URL = 'https://askatask-server.onrender.com'; // Ensure correct protocol and IP address
 
 export const registerUser = async (userData) => {
   try {

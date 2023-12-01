@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://10.239.66.104:3000';
+const API_BASE_URL = 'https://askatask-server.onrender.com';
 
 export const getUserDetails = async (token) => {
   try {
