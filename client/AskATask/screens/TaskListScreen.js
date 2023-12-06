@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { getAllTasks } from '../APIcalls/taskScript';
 import { useAuthToken } from '../Context/AuthTokenProvider';
 import { useRefresh } from '../Context/RefreshProvider';
@@ -14,7 +15,7 @@ import { useRefresh } from '../Context/RefreshProvider';
 const TaskListScreen = (props) => {
   const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState('All');
-  const { refresh } = useRefresh();
+  const { refresh, setRefresh } = useRefresh();
 
   const { authToken } = useAuthToken();
 
@@ -37,6 +38,10 @@ const TaskListScreen = (props) => {
     if (filter === 'All') return true;
     return task.category === filter;
   });
+
+  const handleRefresh = () => {
+    setRefresh(!refresh);
+  };
 
   // Function to render each task
   const renderTask = ({ item }) => (
@@ -69,6 +74,9 @@ const TaskListScreen = (props) => {
       <View style={styles.header}>
         <Image source={require('../assets/icon.png')} style={styles.logo} />
         <Text style={styles.headerTitle}>AskATask</Text>
+        <TouchableOpacity style={styles.refreshButton} onPress={handleRefresh}>
+          <Icon name="refresh" size={24} color="white" />
+        </TouchableOpacity>
       </View>
       <View style={styles.filterContainer}>
         {renderFilterButton('All')}
@@ -142,6 +150,11 @@ const styles = StyleSheet.create({
   taskCategory: {
     fontSize: 14,
     color: '#a9a9a9',
+  },
+  refreshButton: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
   },
 });
 

@@ -14,6 +14,7 @@ import { useAuthToken } from '../Context/AuthTokenProvider';
 import { updateTaskById, closeTaskById } from '../APIcalls/taskScript';
 import { useRefresh } from '../Context/RefreshProvider';
 import { fetchCreatorDetails } from '../APIcalls/userScript';
+import { Alert } from 'react-native';
 
 const UpdateTask = ({ navigation, route }) => {
   const { authToken } = useAuthToken();
@@ -86,17 +87,33 @@ const UpdateTask = ({ navigation, route }) => {
   };
 
   const completeTask = async () => {
-    try {
-      const data = await closeTaskById(
-        taskDetails._id,
-        authToken.split(';')[0]
-      );
-      setRefresh(!refresh);
-      navigation.goBack();
-    } catch (error) {
-      console.error('Error updating task:', error);
-      alert(error.message || 'An error occurred. Please try again.');
-    }
+    Alert.alert(
+      'Confirm Closure',
+      'Are you sure you want to close this task?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Task closure cancelled'),
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: async () => {
+            try {
+              const data = await closeTaskById(
+                taskDetails._id,
+                authToken.split(';')[0]
+              );
+              setRefresh(!refresh);
+              navigation.goBack();
+            } catch (error) {
+              console.error('Error updating task:', error);
+              alert(error.message || 'An error occurred. Please try again.');
+            }
+          },
+        },
+      ]
+    );
   };
 
   useEffect(() => {

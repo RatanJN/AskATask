@@ -19,19 +19,52 @@ const RegisterScreen = (props) => {
   const { refresh, setRefresh } = useRefresh();
 
   const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+    if (!name.trim()) {
+      Alert.alert('Error', 'Please enter your name');
       return;
     }
 
-    if (!email.includes('@bu.edu')) {
+    // Email validation
+    if (!email.trim()) {
+      Alert.alert('Error', 'Email field cannot be empty');
+      return;
+    } else if (!email.includes('@bu.edu')) {
       Alert.alert('Error', 'Please use a BU email address');
+      return;
+    }
+
+    // Phone number validation
+    if (!number.trim()) {
+      Alert.alert('Error', 'Please enter your phone number');
+      return;
+    } else if (number.length < 10) {
+      // Basic length check, can be more complex
+      Alert.alert('Error', 'Please enter a valid phone number');
+      return;
+    }
+
+    // Password validation
+    if (!password.trim()) {
+      Alert.alert('Error', 'Please enter a password');
+      return;
+    } else if (password.length < 6) {
+      // Example: minimum 6 characters
+      Alert.alert('Error', 'Password should be at least 6 characters long');
+      return;
+    }
+
+    // Confirm Password validation
+    if (!confirmPassword.trim()) {
+      Alert.alert('Error', 'Please confirm your password');
+      return;
+    } else if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
       return;
     }
 
     const payload = {
       name: name,
-      bu_email: email,
+      bu_email: email.toLowerCase(),
       password: password,
       conpass: confirmPassword,
       phone_number: number,

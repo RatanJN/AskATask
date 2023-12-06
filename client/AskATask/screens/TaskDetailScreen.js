@@ -14,6 +14,7 @@ import { useAuthToken } from '../Context/AuthTokenProvider';
 import { useRefresh } from '../Context/RefreshProvider';
 import { Alert } from 'react-native';
 import { fetchCreatorDetails } from '../APIcalls/userScript';
+import { Linking } from 'react-native';
 
 const TaskDetailScreen = ({ route, navigation }) => {
   const { authToken } = useAuthToken();
@@ -87,9 +88,18 @@ const TaskDetailScreen = ({ route, navigation }) => {
               <Text style={styles.description}>
                 Mobile: {userDetails.phone_number}
               </Text>
-              <Text style={styles.description}>
-                Email: {userDetails.bu_email}
-              </Text>
+              <TouchableOpacity
+                onPress={() =>
+                  Linking.openURL(`mailto:${userDetails.bu_email}`)
+                }
+              >
+                <Text style={styles.description}>
+                  Email:
+                  <Text style={styles.hyperlinkStyle}>
+                    {userDetails.bu_email}
+                  </Text>
+                </Text>
+              </TouchableOpacity>
             </>
           ) : (
             // Optionally, render a placeholder or loading indicator here
@@ -188,6 +198,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  hyperlinkStyle: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+    fontSize: 16,
+    marginBottom: 20,
   },
 });
 
