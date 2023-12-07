@@ -79,7 +79,12 @@ const UpdateTask = ({ navigation, route }) => {
         authToken.split(';')[0]
       );
       setRefresh(!refresh);
-      navigation.goBack();
+      Alert.alert('Task Reopened', 'The task has been successfully reopened.', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
     } catch (error) {
       console.error('Error updating task:', error);
       alert(error.message || 'An error occurred. Please try again.');
@@ -215,9 +220,15 @@ const UpdateTask = ({ navigation, route }) => {
           )}
 
           <View style={styles.actionButtonsContainer}>
-            <TouchableOpacity style={styles.button} onPress={updateTaskDetails}>
+            <TouchableOpacity
+              style={styles.fullWidthButton}
+              onPress={updateTaskDetails}
+            >
               <Text style={styles.buttonText}>Save Changes</Text>
             </TouchableOpacity>
+          </View>
+
+          <View style={styles.actionButtonsContainer}>
             <TouchableOpacity style={styles.actionButton} onPress={reopenTask}>
               <Text style={styles.actionButtonText}>Reopen Task</Text>
             </TouchableOpacity>
@@ -331,6 +342,14 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  fullWidthButton: {
+    backgroundColor: '#4a90e2',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 10,
+    width: '100%', // Full width
   },
   categoryContainer: {
     flexDirection: 'row',
