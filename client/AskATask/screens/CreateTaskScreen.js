@@ -30,24 +30,49 @@ const CreateTaskScreen = ({ navigation }) => {
   };
 
   const handleCreateTask = async () => {
-    const token = authToken.split(';')[0]; // Get the token
+    // Validate task name
+    if (!taskName.trim()) {
+      Alert.alert('Validation Error', 'Task name is required.');
+      return;
+    }
+
+    // Validate description
+    if (!description.trim()) {
+      Alert.alert('Validation Error', 'Task description is required.');
+      return;
+    }
+
+    // Validate type (assuming 'Academic' and 'Nonacademic' are the only valid types)
+    if (type !== 'Academic' && type !== 'Nonacademic') {
+      Alert.alert('Validation Error', 'Please select a valid task type.');
+      return;
+    }
+
+    // Validate date (assuming you don't want past dates; adjust as necessary)
+    if (startDate < new Date()) {
+      Alert.alert('Validation Error', 'Task date cannot be in the past.');
+      return;
+    }
+
+    // Proceed with task creation
+    const token = authToken.split(';')[0];
     const taskData = {
       title: taskName,
       description: description,
       category: type,
       task_date: startDate.toISOString(),
     };
+
     try {
       const data = await createNewTask(taskData, token);
-      // Navigate back to the previous screen
       navigation.goBack();
       setRefresh(!refresh);
     } catch (error) {
       console.error('Error creating task:', error);
-      // Show an error message
       Alert.alert('Error', 'Failed to create task. Please try again.');
     }
   };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>

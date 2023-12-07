@@ -209,18 +209,15 @@ const UpdateTask = ({ navigation, route }) => {
               <Text style={styles.userInfoText}>
                 Mobile: {userDetails.phone_number}
               </Text>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={updateTaskDetails}
-              >
-                <Text style={styles.buttonText}>Save Changes</Text>
-              </TouchableOpacity>
             </>
           ) : (
             <Text style={styles.label}>Loading user details...</Text>
           )}
 
           <View style={styles.actionButtonsContainer}>
+            <TouchableOpacity style={styles.button} onPress={updateTaskDetails}>
+              <Text style={styles.buttonText}>Save Changes</Text>
+            </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton} onPress={reopenTask}>
               <Text style={styles.actionButtonText}>Reopen Task</Text>
             </TouchableOpacity>
